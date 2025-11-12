@@ -1,6 +1,3 @@
-Perfect! Here’s a **fully polished GitHub-style README.md** for your project with badges, a clickable Table of Contents, and professional formatting. I’ve added explanations, context, and best practices so it’s ready for a real repo.
-
-```markdown
 # 🗳️ Election Project: Full Stack Skills Test
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -27,19 +24,18 @@ Greetings! I am **AKUMON**, and this repository demonstrates a practice **full-s
 
 ## 🛠 Tech Stack Overview
 
-| Technology      | Role                    | Description                                           |
+| Technology | Role | Description |
 |-----------------|------------------------|-------------------------------------------------------|
-| **MySQL**       | Database               | Stores all application data.                         |
-| **Express.js**  | Backend Framework      | Handles server logic and API routes.                 |
-| **React**       | Frontend Library       | Builds interactive user interfaces.                  |
-| **Node.js**     | Runtime Environment    | Executes JavaScript on the server side.             |
+| __MySQL__ | Database | Stores all application data. |
+| __Express.js__ | Backend Framework | Handles server logic and API routes. |
+| __React__ | Frontend Library | Builds interactive user interfaces. |
+| __Node.js__ | Runtime Environment  Executes JavaScript on the server side. |
 
 ---
 
 ## 📂 Project Structure
 
-```
-
+```bash
 election_project/
 ├── backend/
 │   ├── server.js
@@ -50,9 +46,9 @@ election_project/
 ├── public/
 ├── package.json
 └── node_modules/
+```
 
-````
-
+---
 
 # Phase 1️⃣
 > Backend handles API logic and database interaction, while frontend is the user interface.
@@ -61,12 +57,74 @@ election_project/
 
 ## ⚙️ Backend Setup (Node + Express + MySQL)
 
-1. **Create MySQL database** using PhpMyAdmin.  
+1. **Create MySQL database**using PhpMyAdmin.  
+
+```sql
+
+-- 1. Create the database
+CREATE DATABASE election_system_db;
+USE election_system_db;
+
+-- 2. Positions Table
+-- status: 'Open' / 'Closed'
+CREATE TABLE positions (
+    positionID INT AUTO_INCREMENT PRIMARY KEY,
+    positionName VARCHAR(100) NOT NULL UNIQUE,
+    numOfPositions INT NOT NULL, -- Max number of candidates a voter can choose for this position (e.g., 1 for President, 12 for Senator)
+    status ENUM('Open', 'Closed') DEFAULT 'Open' -- 'Open' for active voting, 'Closed' for results
+);
+
+-- 3. Voters Table
+-- voterStat: 'Active' / 'Inactive'
+-- voted: 'Y' / 'N'
+-- NOTE: I'm adding a simple password column (voterPass) as the instructions require login with voterID and VoterPass.
+CREATE TABLE voters (
+    voterID INT AUTO_INCREMENT PRIMARY KEY,
+    voterIDNum VARCHAR(50) NOT NULL UNIQUE, -- Used for login/username
+    voterPass VARCHAR(255) NOT NULL, -- Password for login (e.g., hash it later, but for this exam, a plain string might suffice)
+    voterFName VARCHAR(100) NOT NULL,
+    voterLName VARCHAR(100) NOT NULL,
+    voterMName VARCHAR(100),
+    voterStat ENUM('Active', 'Inactive') DEFAULT 'Inactive',
+    voted ENUM('Y', 'N') DEFAULT 'N'
+);
+
+-- 4. Candidates Table
+-- candStat: 'Active' / 'Inactive'
+CREATE TABLE candidates (
+    candidID INT AUTO_INCREMENT PRIMARY KEY,
+    candidIDNum VARCHAR(50) NOT NULL UNIQUE, -- Candidate's unique ID/number
+    candidFName VARCHAR(100) NOT NULL,
+    candidLName VARCHAR(100) NOT NULL,
+    candidMName VARCHAR(100),
+    positionID INT NOT NULL,
+    candStat ENUM('Active', 'Inactive') DEFAULT 'Active',
+    FOREIGN KEY (positionID) REFERENCES positions(positionID)
+);
+
+-- 5. Votes Table
+CREATE TABLE votes (
+    voteID INT AUTO_INCREMENT PRIMARY KEY,
+    positionID INT NOT NULL,
+    voterID INT NOT NULL,
+    candidID INT NOT NULL,
+    -- Added a unique constraint to prevent a voter from voting twice for the *same* position/candidate (though the 'voted' field handles the overall voting)
+    -- This constraint is more of a safety measure: each voter gets one row per candidate vote.
+    UNIQUE KEY unique_vote (voterID, positionID, candidID),
+    FOREIGN KEY (positionID) REFERENCES positions(positionID),
+    FOREIGN KEY (voterID) REFERENCES voters(voterID),
+    FOREIGN KEY (candidID) REFERENCES candidates(candidID)
+);
+
+-- You'll need to fill in some dummy data for testing.
+
+```
 
 2. **Organize folders**:
+
 ```bash
 mkdir backend frontend
-````
+```
 
 > Or name them `server` and `client` as preferred.
 
@@ -137,7 +195,7 @@ npm install bootstrap react-bootstrap axios react-router-dom
 | axios                         | HTTP client for API calls              | `axios.get('/api/users')`                                          |
 | react-router-dom              | Client-side routing                    | `import { BrowserRouter, Routes, Route } from 'react-router-dom';` |
 
-4. **Setup Proxy for API calls**:
+4. **Setup Proxy for API calls on Frontend**:
 
 ```json
 "proxy": "http://localhost:3001"
@@ -166,3 +224,32 @@ npm start
 3. Open [http://localhost:3000](http://localhost:3000) to see the frontend, communicating with backend at [http://localhost:3001](http://localhost:3001).
 
 ---
+
+# Phase 2️⃣
+> Developing application
+
+1. Go to `App.js` located in frontend/src/App.js and modify the and change the code. (Rest of the comments and instructions are in the code itself)
+
+2. go to `src` folder and create a folder named `components` as well as creating the necessary modules the importeted in the `App.js` (CRUDs)
+
+> Component folder are the reusable, modular pieces of your UI.
+
+```bash
+cd frontend
+cd src
+mkdir components
+cd components
+touch touch PositionsManagement.js VoterManagement.js CandidateManagement.js VotingUI.js ResultsUI.js WinnersUI.js Home.js
+```
+
+3. Go to `PositionsManagement.js` file under `components` folder and encode the necessary code to function the logic of Positions. (Rest of the comments and instructions are in the code itself)
+
+4. Go to `VotingUI.js` file under `components` folder and encode the necessary code to function the logic of Positions. (Rest of the comments and instructions are in the code itself)
+
+5. Go to `ResultsUI.js` file under `components` folder and encode the necessary code to function the logic of Positions. (Rest of the comments and instructions are in the code itself)
+
+6. Go to `WinnersUI.js` file under `components` folder and encode the necessary code to function the logic of Positions. (Rest of the comments and instructions are in the code itself)
+
+7. Go to `Home.js` (Landing Page) file under `components` folder and encode the necessary code to function the logic of Positions. (Rest of the comments and instructions are in the code itself)
+
+8. Go to `VoterManagement.js` (Landing Page) file under `components` folder and encode the necessary code to function the logic of Positions. (Rest of the comments and instructions are in the code itself)
