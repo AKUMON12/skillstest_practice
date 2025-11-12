@@ -88,6 +88,49 @@ const PositionsManagement = () => {
       <h2>✅ Positions Management UI</h2>
       {message && <Alert variant="info">{message}</Alert>}
 
+      {/* Root Candidate Position (Inline Form with Real-time Validation) */}
+      <Card className="mb-4 bg-light border-primary">
+        <Card.Header className="bg-primary text-white">Root Candidate Position</Card.Header>
+        <Card.Body>
+          <Form className="d-flex gap-2 align-items-end">
+            <Form.Group className="mb-0 flex-grow-1">
+              <Form.Label>Position Name</Form.Label>
+              <Form.Control
+                type="text"
+                value={newPosition.positionName}
+                onChange={handleNewInputChange}
+                name="positionName"
+                isInvalid={newPosition.positionName.length > 0 && newPosition.positionName.length < 2}
+              />
+              <Form.Control.Feedback type="invalid">
+                Position name must be at least 2 characters.
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group className="mb-0">
+              <Form.Label>Max Votes</Form.Label>
+              <Form.Control
+                type="number"
+                min="1"
+                value={newPosition.numOfPositions}
+                onChange={handleNewInputChange}
+                name="numOfPositions"
+                isInvalid={newPosition.numOfPositions < 1}
+              />
+              <Form.Control.Feedback type="invalid">
+                Must be at least 1.
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Button 
+              variant="primary" 
+              onClick={handleAddPosition}
+              disabled={!newPosition.positionName || newPosition.numOfPositions < 1}
+            >
+              Set Position
+            </Button>
+          </Form>
+        </Card.Body>
+      </Card>
+
       {/* Add Position Form */}
       <Card className="mb-4">
         <Card.Header>Add New Position</Card.Header>

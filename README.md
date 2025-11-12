@@ -246,10 +246,35 @@ touch touch PositionsManagement.js VoterManagement.js CandidateManagement.js Vot
 
 4. Go to `VotingUI.js` file under `components` folder and encode the necessary code to function the logic of Positions. (Rest of the comments and instructions are in the code itself)
 
+> This is the most complex module due to the constraints.
+> **Key Steps & Logic:**
+- **Voter Login:** Collect `voterIDNum` and `voterPass`.
+  - **Backend Check:** Verify credentials, check `voterStat = 'Active'`, and check `voted = 'N'`.
+- **Display Positions/Candidates:** On successful login, fetch all **'Active'** candidates grouped by **'Open'** positions.
+- **Handle Voting:** Allow the user to select candidates.
+  - **Frontend Constraint:** Enforce that the number of selected candidates for a position (e.g., Senator) is $\le$ `numOfPositions` for that position.
+- **Vote Submission:** Send the final list of votes (an array of `positionID` and `candidID`) to the backend.
+  - **Backend Action:** Insert all votes into the `votes` table.
+  - **Backend Action:** **Crucially**, update the logged-in voter's `voted` field to `'Y'`.
+
+
+
 5. Go to `ResultsUI.js` file under `components` folder and encode the necessary code to function the logic of Positions. (Rest of the comments and instructions are in the code itself)
 
 6. Go to `WinnersUI.js` file under `components` folder and encode the necessary code to function the logic of Positions. (Rest of the comments and instructions are in the code itself)
 
 7. Go to `Home.js` (Landing Page) file under `components` folder and encode the necessary code to function the logic of Positions. (Rest of the comments and instructions are in the code itself)
 
+>This component simply acts as the landing page, providing context for the application.
+
 8. Go to `VoterManagement.js` (Landing Page) file under `components` folder and encode the necessary code to function the logic of Positions. (Rest of the comments and instructions are in the code itself)
+
+> This code includes:
+- Form for Adding a voter.
+- Table to Read all voters.
+- Modal or Form for Updating details.
+- Button for Deactivating (`voterStat` to 'Inactive').
+
+9. Go to `CandidateManagement.js` (Landing Page) file under `components` folder and encode the necessary code to function the logic of Positions. (Rest of the comments and instructions are in the code itself)
+
+> This component requires CRUD (Create, Read, Update, Deactivate) operations against the /api/candidates endpoint, and requires fetching the list of Positions to assign a candidate to a role.
