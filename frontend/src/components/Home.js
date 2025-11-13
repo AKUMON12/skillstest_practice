@@ -23,7 +23,7 @@ return (
         <Card bg="primary" text="white" className="p-4 mb-4 text-center">
             <h1>🇵🇭 Philippine National Election System Imitation</h1>
             <p className="lead">
-                Welcome to the MERN-Stack implementation for your Capstone Project 2 skills test.
+                Welcome to the MyERN-Stack implementation for your Capstone Project 2 skills test.
             </p>
         </Card>
 

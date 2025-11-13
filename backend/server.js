@@ -1,100 +1,346 @@
-// server.js
-const express = require('express');             // ──
-const mysql = require('mysql');                 //   ├── Importing all necessary dependencies
-const bodyParser = require('body-parser');      //   ├── the one I installed via npm
-const cors = require('cors');                   // ──
+// ──────────────────────────────────────────────────────────────
+// 📦 IMPORT DEPENDENCIES
+// ──────────────────────────────────────────────────────────────
+// These are all the modules your server needs to run.
+import express from 'express';          // Web framework for building the server & API endpoints
+import mysql from 'mysql';              // MySQL client for connecting & querying the database
+import bodyParser from 'body-parser';   // Middleware for parsing incoming JSON request bodies
+import cors from 'cors';                // Enables Cross-Origin Resource Sharing (for frontend-backend connection)
 
-const app = express();  // Initialize INSTANCE of Express app
-const PORT = 3001;      // Backend will run on port 3001
 
-// Middlewares
-app.use(cors());                // Allow cross-origin requests from the React frontend
-app.use(bodyParser.json());     // To parse JSON bodies from POST requests
+// ──────────────────────────────────────────────────────────────
+// 🚀 INITIALIZE EXPRESS APP
+// ──────────────────────────────────────────────────────────────
+const app = express();
+const PORT = 3001;          // The backend server will run on http://localhost:3001
 
-// MySQL Connection Setup
+// Apply middleware
+app.use(cors());            // Allows frontend (React) to communicate with backend
+app.use(bodyParser.json()); // Converts JSON request bodies into JS objects
+
+
+// ──────────────────────────────────────────────────────────────
+// 🗄️ MYSQL DATABASE CONNECTION
+// ──────────────────────────────────────────────────────────────
 const db = mysql.createConnection({
-    host: 'localhost',      // Your XAMPP host
-    user: 'root',           // Your XAMPP default username
-    password: '',           // Your XAMPP default password (usually empty)
-    database: 'election_db' // The database you created
+  host: 'localhost',                // Usually 'localhost' when using XAMPP
+  user: 'root',                     // Default MySQL user for XAMPP
+  password: '',                     // Default password is empty
+  database: 'election_system_db',   // Your database name
 });
 
-// Connect to MySQL
+// Connect to MySQL and confirm the connection
 db.connect((err) => {
-    if (err) {
-        console.error('Error connecting to MySQL:', err);
-        return;
-    }
-    console.log('Connected to MySQL Database.');
+  if (err) {
+    console.error('❌ Error connecting to MySQL:', err);
+    return;
+  }
+  console.log('✅ Connected to MySQL Database.');
 });
 
-// --- API ROUTES GO HERE ---
 
-// Example: Get all positions (for Positions Management UI)
+// ──────────────────────────────────────────────────────────────
+// 📋 SECTION 1: POSITIONS MANAGEMENT (CRUD)
+// ──────────────────────────────────────────────────────────────
+
+// 🟢 READ all positions
 app.get('/api/positions', (req, res) => {
-    const sql = "SELECT * FROM positions";
-    db.query(sql, (err, result) => {
-        if (err) {
-            console.error('Error fetching positions:', err);
-            return res.status(500).json({ error: 'Failed to fetch positions' });
-        }
-        res.json(result); // Send the list of positions back to the frontend
-    });
+  const sql = 'SELECT * FROM positions';
+  db.query(sql, (err, result) => {
+    if (err) return res.status(500).json({ error: 'Failed to fetch positions' });
+    res.json(result);
+  });
 });
 
-// Example: Add a new position [1] (for Positions Management UI)
+// 🟡 CREATE a new position
 app.post('/api/positions', (req, res) => {
-    const { positionName, numOfPositions } = req.body;
-    // status defaults to 'Open' in the SQL table definition
-    const sql = "INSERT INTO positions (positionName, numOfPositions) VALUES (?, ?)";
-    db.query(sql, [positionName, numOfPositions], (err, result) => {
-        if (err) {
-            console.error('Error adding position:', err);
-            return res.status(500).json({ error: 'Failed to add position', details: err.message });
-        }
-        res.json({ message: 'Position added successfully', positionID: result.insertId });
-    });
+  const { positionName, numOfPositions } = req.body;
+  const sql = 'INSERT INTO positions (positionName, numOfPositions) VALUES (?, ?)';
+  db.query(sql, [positionName, numOfPositions], (err, result) => {
+    if (err)
+      return res.status(500).json({ error: 'Failed to add position', details: err.message });
+    res.json({ message: 'Position added successfully', positionID: result.insertId });
+  });
 });
 
-// Example: Deactivate/Close a position [2] (for Positions Management UI)
+// 🔵 UPDATE position details
+app.put('/api/positions/:id', (req, res) => {
+  const { id } = req.params;
+  const { positionName, numOfPositions } = req.body;
+  const sql =
+    'UPDATE positions SET positionName = ?, numOfPositions = ? WHERE positionID = ?';
+  db.query(sql, [positionName, numOfPositions, id], (err) => {
+    if (err) return res.status(500).json({ error: 'Failed to update position' });
+    res.json({ message: 'Position updated successfully' });
+  });
+});
+
+// 🔴 UPDATE position status (Open / Closed)
 app.put('/api/positions/status/:id', (req, res) => {
-    const { id } = req.params;
-    const { status } = req.body; // Expecting 'Open' or 'Closed'
-    const sql = "UPDATE positions SET status = ? WHERE positionID = ?";
-    db.query(sql, [status, id], (err, result) => {
-        if (err) {
-            console.error('Error updating position status:', err);
-            return res.status(500).json({ error: 'Failed to update status' });
-        }
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: 'Position not found' });
-        }
-        res.json({ message: 'Position status updated successfully' });
-    });
+  const { id } = req.params;
+  const { status } = req.body; // Expected values: 'Open' or 'Closed'
+  const sql = 'UPDATE positions SET status = ? WHERE positionID = ?';
+  db.query(sql, [status, id], (err, result) => {
+    if (err) return res.status(500).json({ error: 'Failed to update position status' });
+    if (result.affectedRows === 0)
+      return res.status(404).json({ message: 'Position not found' });
+    res.json({ message: 'Position status updated successfully' });
+  });
 });
 
 
-// --- The remaining 6 Modules will require more specific routes: ---
+// ──────────────────────────────────────────────────────────────
+// 🧑‍💻 SECTION 2: VOTER MANAGEMENT (CRUD)
+// ──────────────────────────────────────────────────────────────
 
-// 1. Positions Management (Read, Add, Update, Deactivate)
-//    - Already showed Read, Add, and Deactivate (Update is similar to Deactivate but modifies name/count)
-// 2. Voter Management (Read, Add, Update, Deactivate)
-//    - Routes: GET /api/voters, POST /api/voters, PUT /api/voters/:id (for update), PUT /api/voters/status/:id (for deactivation)
-// 3. Candidate Management (Read, Add, Update, Deactivate)
-//    - Routes: GET /api/candidates, POST /api/candidates, PUT /api/candidates/:id, PUT /api/candidates/status/:id
+// 🟢 READ all voters (excluding passwords for security)
+app.get('/api/voters', (req, res) => {
+  const sql =
+    'SELECT voterID, voterIDNum, voterFName, voterLName, voterStat, voted FROM voters';
+  db.query(sql, (err, result) => {
+    if (err) return res.status(500).json({ error: 'Failed to fetch voters' });
+    res.json(result);
+  });
+});
 
-// 4. Voting/Votation UI (Login, Vote Submission)
-//    - POST /api/voters/login (Check credentials, voterStat, voted)
-//    - POST /api/votes (Submit vote, update 'voted' flag in voters table)
+// 🟡 CREATE new voter
+app.post('/api/voters', (req, res) => {
+  const { voterIDNum, voterPass, voterFName, voterLName, voterMName } = req.body;
+  const sql = `
+    INSERT INTO voters (voterIDNum, voterPass, voterFName, voterLName, voterMName)
+    VALUES (?, ?, ?, ?, ?)
+  `;
+  db.query(sql, [voterIDNum, voterPass, voterFName, voterLName, voterMName || null], (err, result) => {
+    if (err)
+      return res.status(500).json({ error: 'Failed to add voter', details: err.message });
+    res.json({ message: 'Voter added successfully', voterID: result.insertId });
+  });
+});
 
-// 5. Election Results UI (Tally Votes, Calculate Percentage)
-//    - GET /api/results (Complex query to count votes and join with positions/candidates)
+// 🔵 UPDATE voter details
+app.put('/api/voters/:id', (req, res) => {
+  const { id } = req.params;
+  const { voterFName, voterLName, voterMName, voterPass } = req.body;
+  const sql = `
+    UPDATE voters
+    SET voterFName = ?, voterLName = ?, voterMName = ?, 
+        voterPass = COALESCE(?, voterPass)
+    WHERE voterID = ?
+  `;
+  db.query(sql, [voterFName, voterLName, voterMName || null, voterPass, id], (err) => {
+    if (err) return res.status(500).json({ error: 'Failed to update voter' });
+    res.json({ message: 'Voter updated successfully' });
+  });
+});
 
-// 6. Election Winners UI (Identify Winners)
-//    - GET /api/winners (Even more complex query/logic to determine winner/s based on numOfPositions)
+// 🔴 UPDATE voter status (Active / Inactive)
+app.put('/api/voters/status/:id', (req, res) => {
+  const { id } = req.params;
+  const { voterStat } = req.body;
+  const sql = 'UPDATE voters SET voterStat = ? WHERE voterID = ?';
+  db.query(sql, [voterStat, id], (err) => {
+    if (err) return res.status(500).json({ error: 'Failed to update voter status' });
+    res.json({ message: 'Voter status updated successfully' });
+  });
+});
 
 
-// Start the server
+// ──────────────────────────────────────────────────────────────
+// 🧍 SECTION 3: CANDIDATE MANAGEMENT (CRUD)
+// ──────────────────────────────────────────────────────────────
+
+// 🟢 READ all candidates (joined with position name)
+app.get('/api/candidates', (req, res) => {
+  const sql = `
+    SELECT c.*, p.positionName
+    FROM candidates c
+    JOIN positions p ON c.positionID = p.positionID
+  `;
+  db.query(sql, (err, result) => {
+    if (err) return res.status(500).json({ error: 'Failed to fetch candidates' });
+    res.json(result);
+  });
+});
+
+// 🟡 CREATE new candidate
+app.post('/api/candidates', (req, res) => {
+  const { candidIDNum, candidFName, candidLName, candidMName, positionID } = req.body;
+  const sql = `
+    INSERT INTO candidates (candidIDNum, candidFName, candidLName, candidMName, positionID)
+    VALUES (?, ?, ?, ?, ?)
+  `;
+  db.query(sql, [candidIDNum, candidFName, candidLName, candidMName || null, positionID], (err) => {
+    if (err)
+      return res.status(500).json({ error: 'Failed to add candidate', details: err.message });
+    res.json({ message: 'Candidate added successfully' });
+  });
+});
+
+// 🔵 UPDATE candidate details
+app.put('/api/candidates/:id', (req, res) => {
+  const { id } = req.params;
+  const { candidFName, candidLName, candidMName, positionID } = req.body;
+  const sql = `
+    UPDATE candidates
+    SET candidFName = ?, candidLName = ?, candidMName = ?, positionID = ?
+    WHERE candidID = ?
+  `;
+  db.query(sql, [candidFName, candidLName, candidMName || null, positionID, id], (err) => {
+    if (err) return res.status(500).json({ error: 'Failed to update candidate' });
+    res.json({ message: 'Candidate updated successfully' });
+  });
+});
+
+// 🔴 UPDATE candidate status (Active / Inactive)
+app.put('/api/candidates/status/:id', (req, res) => {
+  const { id } = req.params;
+  const { candStat } = req.body;
+  const sql = 'UPDATE candidates SET candStat = ? WHERE candidID = ?';
+  db.query(sql, [candStat, id], (err) => {
+    if (err) return res.status(500).json({ error: 'Failed to update candidate status' });
+    res.json({ message: 'Candidate status updated successfully' });
+  });
+});
+
+
+// ──────────────────────────────────────────────────────────────
+// 🗳️ SECTION 4: VOTING (Login + Submission)
+// ──────────────────────────────────────────────────────────────
+
+// 🟢 Voter Login
+// Checks credentials and loads active candidates for open positions.
+app.post('/api/voters/login', (req, res) => {
+  const { voterIDNum, voterPass } = req.body;
+
+  const sqlVoter = `
+    SELECT * FROM voters 
+    WHERE voterIDNum = ? AND voterPass = ?
+      AND voterStat = 'Active' AND voted = 'N'
+  `;
+
+  db.query(sqlVoter, [voterIDNum, voterPass], (err, voterResult) => {
+    if (err || voterResult.length === 0) {
+      return res.status(401).json({
+        error: 'Login failed or voter inactive/already voted.',
+      });
+    }
+
+    const voter = voterResult[0];
+
+    // Get active candidates for all open positions
+    const sqlCandidates = `
+      SELECT c.*, p.positionName, p.numOfPositions
+      FROM candidates c
+      JOIN positions p ON c.positionID = p.positionID
+      WHERE c.candStat = 'Active' AND p.status = 'Open'
+      ORDER BY p.positionID, c.candidLName
+    `;
+
+    db.query(sqlCandidates, (err, candidates) => {
+      if (err) return res.status(500).json({ error: 'Failed to load ballot.' });
+
+      // Group candidates by their position
+      const grouped = candidates.reduce((acc, cand) => {
+        const { positionID, positionName, numOfPositions, ...rest } = cand;
+        if (!acc[positionID])
+          acc[positionID] = { positionName, numOfPositions, candidateList: [] };
+        acc[positionID].candidateList.push(rest);
+        return acc;
+      }, {});
+
+      // Remove password before sending response
+      const { voterPass: _, ...safeVoter } = voter;
+      res.json({ voter: safeVoter, candidates: grouped });
+    });
+  });
+});
+
+// 🟡 Submit votes
+app.post('/api/votes', (req, res) => {
+  const { votes, voterID } = req.body;
+
+  if (!votes || votes.length === 0)
+    return res.status(400).json({ error: 'No votes submitted.' });
+
+  const values = votes.map(v => [v.positionID, v.voterID, v.candidID]);
+  const sqlInsert = 'INSERT INTO votes (positionID, voterID, candidID) VALUES ?';
+
+  // Record the votes
+  db.query(sqlInsert, [values], (err) => {
+    if (err) return res.status(500).json({ error: 'Failed to record votes.' });
+
+    // Update voter's "voted" flag
+    const sqlUpdate = 'UPDATE voters SET voted = "Y" WHERE voterID = ?';
+    db.query(sqlUpdate, [voterID], (err) => {
+      if (err)
+        return res.status(500).json({
+          message: 'Votes recorded, but failed to mark voter as voted.',
+          warning: true,
+        });
+      res.json({ message: 'Votes successfully recorded and voter marked as voted.' });
+    });
+  });
+});
+
+
+// ──────────────────────────────────────────────────────────────
+// 📊 SECTION 5: ELECTION RESULTS & WINNERS
+// ──────────────────────────────────────────────────────────────
+
+// 🟢 GET election results (vote counts per candidate)
+app.get('/api/results', (req, res) => {
+  const sql = `
+    SELECT
+      p.positionID,
+      p.positionName,
+      c.candidID,
+      c.candidFName,
+      c.candidLName,
+      COUNT(v.voteID) AS voteCount,
+      (
+        SELECT COUNT(*) FROM votes v_total WHERE v_total.positionID = p.positionID
+      ) AS totalVotesForPosition
+    FROM positions p
+    JOIN candidates c ON p.positionID = c.positionID
+    LEFT JOIN votes v ON c.candidID = v.candidID
+    GROUP BY p.positionID, c.candidID
+    ORDER BY p.positionID, voteCount DESC
+  `;
+  db.query(sql, (err, result) => {
+    if (err) return res.status(500).json({ error: 'Failed to calculate results.' });
+    res.json(result);
+  });
+});
+
+// 🟡 GET election winners
+// Returns ranked candidates; frontend determines winners based on numOfPositions
+app.get('/api/winners', (req, res) => {
+  const sql = `
+    SELECT
+      p.positionID,
+      p.positionName,
+      p.numOfPositions,
+      c.candidID,
+      c.candidFName,
+      c.candidLName,
+      COUNT(v.voteID) AS voteCount
+    FROM positions p
+    JOIN candidates c ON p.positionID = c.positionID
+    LEFT JOIN votes v ON c.candidID = v.candidID
+    GROUP BY p.positionID, c.candidID
+    ORDER BY p.positionID, voteCount DESC
+  `;
+  db.query(sql, (err, result) => {
+    if (err)
+      return res.status(500).json({ error: 'Failed to calculate election winners.' });
+    res.json(result);
+  });
+});
+
+
+// ──────────────────────────────────────────────────────────────
+// 🏁 START THE SERVER
+// ──────────────────────────────────────────────────────────────
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
 });

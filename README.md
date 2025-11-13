@@ -165,6 +165,8 @@ npm install express mysql body-parser cors nodemon
 npm run dev
 ```
 
+> Very crucial for testing if the CRUD of your system functions or not.
+
 ---
 
 ## ⚛️ Frontend Setup (React)

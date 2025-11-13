@@ -38,9 +38,9 @@ function App() {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link onClick={() => setCurrentPage('positions')}>Positions Mgt</Nav.Link>
-              <Nav.Link onClick={() => setCurrentPage('voters')}>Voters Mgt</Nav.Link>
-              <Nav.Link onClick={() => setCurrentPage('candidates')}>Candidates Mgt</Nav.Link>
+              <Nav.Link onClick={() => setCurrentPage('positions')}>Positions</Nav.Link>
+              <Nav.Link onClick={() => setCurrentPage('candidates')}>Candidates</Nav.Link>
+              <Nav.Link onClick={() => setCurrentPage('voters')}>Voters</Nav.Link>
               <Nav.Link onClick={() => setCurrentPage('voting')}>Voting</Nav.Link>
               <Nav.Link onClick={() => setCurrentPage('results')}>Results</Nav.Link>
               <Nav.Link onClick={() => setCurrentPage('winners')}>Winners</Nav.Link>
