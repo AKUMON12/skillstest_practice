@@ -31,14 +31,9 @@ const CandidateManagement = () => {
   };
 
 useEffect(() => {
-  (async () => {
-    try {
-      // ...inline fetch code from fetchData...
-    } catch (error) {
-      setMessage('Error fetching candidate or position records.');
-    }
-  })();
-}, []);
+    // Correctly call the defined fetchData function when the component loads
+    fetchData();
+}, []); // Empty dependency array means this runs once on mount
 
   const handleNewInputChange = (e) => {
     const { name, value } = e.target;
