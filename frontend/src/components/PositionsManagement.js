@@ -1,100 +1,125 @@
-// src/components/PositionsManagement.js
+// Import React and hooks (useState, useEffect) to create the component and manage state
 import React, { useState, useEffect } from 'react';
-import { Container, Card, Form, Button, Table, Alert } from 'react-bootstrap';
-import axios from 'axios'; // Used for making HTTP requests
 
-// Define the base URL for the backend API
+// Import React Bootstrap components for UI layout (Container, Card, Form, Button, Table, Alert)
+import { Container, Card, Form, Button, Table, Alert } from 'react-bootstrap';
+
+// Import axios for making HTTP requests to interact with the backend
+import axios from 'axios'; 
+
+// Import custom CSS file for styling the component
+import '../styles/PositionsManagement.css'; 
+
+// Define the base URL for API requests related to positions management
 const API_URL = 'http://localhost:3001/api/positions';
 
 const PositionsManagement = () => {
-  const [positions, setPositions] = useState([]); // State to hold the list of positions
-  const [newPosition, setNewPosition] = useState({ positionName: '', numOfPositions: 1 }); // State for the new position form
-  const [editPosition, setEditPosition] = useState(null); // State to hold the position being edited
-  const [message, setMessage] = useState(''); // State for displaying success/error messages
+  // State to store the list of positions fetched from the backend
+  const [positions, setPositions] = useState([]);
 
-  // Function to fetch all positions from the backend
+  // State to store data for a new position being added
+  const [newPosition, setNewPosition] = useState({ positionName: '', numOfPositions: 1 });
+
+  // State to hold the position currently being edited
+  const [editPosition, setEditPosition] = useState(null);
+
+  // State to hold a success/error message for user feedback
+  const [message, setMessage] = useState('');
+
+  // Function to fetch all positions from the backend API
   const fetchPositions = async () => {
     try {
+      // Make GET request to fetch all positions
       const response = await axios.get(API_URL);
-      setPositions(response.data);
+      setPositions(response.data); // Update positions state with fetched data
     } catch (error) {
+      // Set error message if fetching fails
       setMessage('Error fetching positions.');
     }
   };
 
+  // useEffect hook to fetch positions when the component mounts (runs once)
   useEffect(() => {
-    fetchPositions();
-  }, []); // Run only once on component mount
+    fetchPositions(); // Call fetchPositions function when component mounts
+  }, []); // Empty dependency array ensures it runs only once on mount
 
-  // Handle input change for the new position form
+  // Function to handle input changes for the new position form
   const handleNewInputChange = (e) => {
     const { name, value } = e.target;
+    // Update the newPosition state based on the form input
     setNewPosition({ ...newPosition, [name]: value });
   };
 
-  // Handle input change for the edit form
+  // Function to handle input changes for the edit form
   const handleEditInputChange = (e) => {
     const { name, value } = e.target;
+    // Update the editPosition state based on the form input
     setEditPosition({ ...editPosition, [name]: value });
   };
 
-  // Add a position record [1]
+  // Function to handle adding a new position
   const handleAddPosition = async (e) => {
     e.preventDefault();
+    // Validate the input values for position name and number of positions
     if (!newPosition.positionName || newPosition.numOfPositions < 1) {
       setMessage('Please enter a valid name and number of positions.');
       return;
     }
     try {
-      // POST request to the backend
+      // Send POST request to add the new position to the backend
       await axios.post(API_URL, newPosition);
-      setMessage('Position added successfully!');
+      setMessage('Position added successfully!'); // Show success message
       setNewPosition({ positionName: '', numOfPositions: 1 }); // Clear form
-      fetchPositions(); // Refresh the list
+      fetchPositions(); // Refresh the list of positions
     } catch (error) {
-      setMessage('Error adding position. It might already exist.');
+      setMessage('Error adding position. It might already exist.'); // Show error message if adding fails
     }
   };
 
-  // Update a position record [1]
+  // Function to handle updating an existing position
   const handleUpdatePosition = async (e) => {
     e.preventDefault();
+    // Ensure that there's an editPosition selected
     if (!editPosition) return;
     try {
-      // PUT request to the backend for updating details
+      // Send PUT request to update the selected position
       await axios.put(`${API_URL}/${editPosition.positionID}`, editPosition);
-      setMessage('Position updated successfully!');
-      setEditPosition(null); // Exit edit mode
-      fetchPositions(); // Refresh the list
+      setMessage('Position updated successfully!'); // Show success message
+      setEditPosition(null); // Clear edit form
+      fetchPositions(); // Refresh the list of positions
     } catch (error) {
-      setMessage('Error updating position.');
+      setMessage('Error updating position.'); // Show error message if update fails
     }
   };
   
-  // Deactivating a position record [2] (Setting status to 'Closed')
+  // Function to deactivate a position (set status to 'Closed')
   const handleDeactivatePosition = async (positionID) => {
     try {
-      // PUT request to update the status to 'Closed'
+      // Send PUT request to change the status of the position to 'Closed'
       await axios.put(`${API_URL}/status/${positionID}`, { status: 'Closed' });
-      setMessage(`Position ID ${positionID} deactivated (Closed).`);
-      fetchPositions(); // Refresh the list
+      setMessage(`Position ID ${positionID} deactivated (Closed).`); // Show success message
+      fetchPositions(); // Refresh the list of positions
     } catch (error) {
-      setMessage('Error deactivating position.');
+      setMessage('Error deactivating position.'); // Show error message if deactivation fails
     }
   };
 
   return (
+    // Main container for the component UI
     <Container>
       <h2>✅ Positions Management UI</h2>
+      {/* Display message if any success or error message exists */}
       {message && <Alert variant="info">{message}</Alert>}
 
-      {/* Root Candidate Position (Inline Form with Real-time Validation) */}
+      {/* Card for the Root Candidate Position (Inline Form) */}
       <Card className="mb-4 bg-light border-primary">
         <Card.Header className="bg-primary text-white">Root Candidate Position</Card.Header>
         <Card.Body>
+          {/* Inline form with real-time validation */}
           <Form className="d-flex gap-2 align-items-end">
             <Form.Group className="mb-0 flex-grow-1">
               <Form.Label>Position Name</Form.Label>
+              {/* Input for position name with validation */}
               <Form.Control
                 type="text"
                 value={newPosition.positionName}
@@ -108,6 +133,7 @@ const PositionsManagement = () => {
             </Form.Group>
             <Form.Group className="mb-0">
               <Form.Label>Max Votes</Form.Label>
+              {/* Input for number of positions (max votes) with validation */}
               <Form.Control
                 type="number"
                 min="1"
@@ -120,6 +146,7 @@ const PositionsManagement = () => {
                 Must be at least 1.
               </Form.Control.Feedback>
             </Form.Group>
+            {/* Submit button for adding the position */}
             <Button 
               variant="primary" 
               onClick={handleAddPosition}
@@ -131,11 +158,12 @@ const PositionsManagement = () => {
         </Card.Body>
       </Card>
 
-      {/* Add Position Form */}
+      {/* Card for adding a new position (standard form) */}
       <Card className="mb-4">
         <Card.Header>Add New Position</Card.Header>
         <Card.Body>
           <Form onSubmit={handleAddPosition}>
+            {/* Input field for position name */}
             <Form.Group className="mb-3">
               <Form.Label>Position Name</Form.Label>
               <Form.Control
@@ -146,6 +174,7 @@ const PositionsManagement = () => {
                 required
               />
             </Form.Group>
+            {/* Input field for number of positions (max votes) */}
             <Form.Group className="mb-3">
               <Form.Label>Number of Winners/Votes (e.g., 1 or 12)</Form.Label>
               <Form.Control
@@ -157,6 +186,7 @@ const PositionsManagement = () => {
                 required
               />
             </Form.Group>
+            {/* Submit button for adding position */}
             <Button variant="primary" type="submit">
               Add Position
             </Button>
@@ -164,13 +194,13 @@ const PositionsManagement = () => {
         </Card.Body>
       </Card>
       
-      {/* Edit Form (Conditionally rendered) */}
+      {/* Edit form (conditionally rendered if editPosition is not null) */}
       {editPosition && (
         <Card className="mb-4 bg-light">
           <Card.Header>Edit Position: {editPosition.positionName}</Card.Header>
           <Card.Body>
             <Form onSubmit={handleUpdatePosition}>
-              {/* Form Controls for editing */}
+              {/* Input field for editing position name */}
               <Form.Group className="mb-3">
                 <Form.Label>Position Name</Form.Label>
                 <Form.Control
@@ -181,6 +211,7 @@ const PositionsManagement = () => {
                   required
                 />
               </Form.Group>
+              {/* Input field for editing number of positions */}
               <Form.Group className="mb-3">
                 <Form.Label>Number of Winners/Votes (e.g., 1 or 12)</Form.Label>
                 <Form.Control
@@ -192,6 +223,7 @@ const PositionsManagement = () => {
                   required
                 />
               </Form.Group>
+              {/* Buttons for saving changes or cancelling the edit */}
               <Button variant="success" type="submit" className="me-2">
                 Save Changes
               </Button>
@@ -203,7 +235,7 @@ const PositionsManagement = () => {
         </Card>
       )}
 
-      {/* Positions List Table */}
+      {/* Table displaying the list of positions */}
       <h3>List of Positions</h3>
       <Table striped bordered hover responsive>
         <thead>
@@ -216,12 +248,14 @@ const PositionsManagement = () => {
           </tr>
         </thead>
         <tbody>
+          {/* Loop through positions array and display each position */}
           {positions.map((pos) => (
             <tr key={pos.positionID}>
               <td>{pos.positionID}</td>
               <td>{pos.positionName}</td>
               <td>{pos.numOfPositions}</td>
               <td>
+                {/* Display status with a badge */}
                 <span className={`badge ${pos.status === 'Open' ? 'bg-success' : 'bg-danger'}`}>
                   {pos.status}
                 </span>
@@ -231,7 +265,7 @@ const PositionsManagement = () => {
                 <Button variant="outline-primary" size="sm" className="me-2" onClick={() => setEditPosition(pos)}>
                   Update
                 </Button>
-                {/* Deactivate Button */}
+                {/* Button to deactivate position */}
                 <Button 
                   variant="outline-danger" 
                   size="sm" 
