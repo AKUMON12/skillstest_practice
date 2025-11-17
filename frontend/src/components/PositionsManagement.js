@@ -92,15 +92,21 @@ const PositionsManagement = () => {
     }
   };
   
-  // Function to deactivate a position (set status to 'Closed')
-  const handleDeactivatePosition = async (positionID) => {
+  // Toggle a position's status between 'Open' and 'Closed' (active/inactive)
+  const handleTogglePositionStatus = async (positionID, currentStatus) => {
     try {
-      // Send PUT request to change the status of the position to 'Closed'
-      await axios.put(`${API_URL}/status/${positionID}`, { status: 'Closed' });
-      setMessage(`Position ID ${positionID} deactivated (Closed).`); // Show success message
-      fetchPositions(); // Refresh the list of positions
+      const newStatus = currentStatus === 'Open' ? 'Closed' : 'Open';
+      // PUT request to update the status
+      await axios.put(`${API_URL}/status/${positionID}`, { status: newStatus });
+      setMessage(
+        `Position ID ${positionID} ${newStatus === 'Open' ? 'activated (Open)' : 'deactivated (Closed)'}.`
+      );
+      // Optimistically update local state so UI updates immediately
+      setPositions((prev) => prev.map((p) => (p.positionID === positionID ? { ...p, status: newStatus } : p)));
+      // Ensure server state eventually reconciled
+      // fetchPositions(); // uncomment if you prefer full refresh
     } catch (error) {
-      setMessage('Error deactivating position.'); // Show error message if deactivation fails
+      setMessage('Error changing position status.');
     }
   };
 
@@ -266,13 +272,12 @@ const PositionsManagement = () => {
                   Update
                 </Button>
                 {/* Button to deactivate position */}
-                <Button 
-                  variant="outline-danger" 
-                  size="sm" 
-                  onClick={() => handleDeactivatePosition(pos.positionID)}
-                  disabled={pos.status === 'Closed'}
+                <Button
+                  variant={pos.status === 'Open' ? 'outline-danger' : 'outline-success'}
+                  size="sm"
+                  onClick={() => handleTogglePositionStatus(pos.positionID, pos.status)}
                 >
-                  Deactivate
+                  {pos.status === 'Open' ? 'Deactivate' : 'Activate'}
                 </Button>
               </td>
             </tr>
