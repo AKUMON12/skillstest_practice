@@ -5,7 +5,7 @@
 [![React Version](https://img.shields.io/badge/React-v19.2.0-blue)](https://reactjs.org/)
 [![MySQL](https://img.shields.io/badge/MySQL-v10.4.32-orange)](https://www.mysql.com/)
 
-Greetings! I am **AKUMON**, and this repository demonstrates a practice **full-stack web application** for an upcoming skills test. The project uses the **MySQL, Express, React, Node.js (MERN-like) stack**.  
+Greetings! I am **AKUMON**, and this repository demonstrates a practice **full-stack web application** for an upcoming skills test. The project uses the **MySQL, Express, React, Node.js (MERN-like) stack**.
 
 ---
 
@@ -24,12 +24,12 @@ Greetings! I am **AKUMON**, and this repository demonstrates a practice **full-s
 
 ## 🛠 Tech Stack Overview
 
-| Technology | Role | Description |
-|-----------------|------------------------|-------------------------------------------------------|
-| __MySQL__ | Database | Stores all application data. |
-| __Express.js__ | Backend Framework | Handles server logic and API routes. |
-| __React__ | Frontend Library | Builds interactive user interfaces. |
-| __Node.js__ | Runtime Environment  Executes JavaScript on the server side. |
+| Technology     | Role                                                        | Description                          |
+| -------------- | ----------------------------------------------------------- | ------------------------------------ |
+| **MySQL**      | Database                                                    | Stores all application data.         |
+| **Express.js** | Backend Framework                                           | Handles server logic and API routes. |
+| **React**      | Frontend Library                                            | Builds interactive user interfaces.  |
+| **Node.js**    | Runtime Environment Executes JavaScript on the server side. |
 
 ---
 
@@ -51,13 +51,14 @@ election_project/
 ---
 
 # Phase 1️⃣
+
 > Backend handles API logic and database interaction, while frontend is the user interface.
 
 ---
 
 ## ⚙️ Backend Setup (Node + Express + MySQL)
 
-1. **Create MySQL database**using PhpMyAdmin.  
+1. **Create MySQL database**using PhpMyAdmin.
 
 ```sql
 
@@ -120,10 +121,101 @@ CREATE TABLE votes (
 
 ```
 
+---
+
+# 📘 Setting Up Database in phpMyAdmin (Structure Tab Guide)
+
+If you're using **phpMyAdmin**, follow these steps when setting up your database and tables:
+
+---
+
+## ✅ **A. Create the Database**
+
+1. Open **phpMyAdmin**.
+2. Create a new database using your **preloaded database name**.
+
+---
+
+## ✅ **B. Create Each Table**
+
+Create the following tables one by one:
+
+- `positions`
+- `voters`
+- `candidates`
+- `votes`
+
+After creating a table, you will be automatically redirected to the **Structure** page.
+
+---
+
+## ✅ **C. Inside the Structure Page**
+
+Here you will define all columns for each table.
+
+### 🔹 **Column Definitions**
+
+| Field             | Meaning                                                                                                                                                 |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Column Name**   | The name of each column in the table                                                                                                                    |
+| **Data Type**     | Examples: `INT` (numbers), `VARCHAR` (text), `ENUM` (yes/no options)                                                                                    |
+| **Length/Values** | Examples:<br>• `50` (short text)<br>• `100` (passwords)<br>• `11` (integer length)<br>• `20` (extra words)<br>• `'Y', 'N'` (ENUM values — example only) |
+| **Index**         | Choose:<br>• **PRIMARY** → Primary Key<br>• **INDEX** → Foreign Key                                                                                     |
+| **A_I**           | Check this if the column is a **PRIMARY KEY** (Auto Increment)                                                                                          |
+
+After setting all columns → **Click Save**.
+
+---
+
+## ✅ **D. Define Foreign Keys (Relationships)**
+
+### Steps:
+
+1. Go to the **Structure** page of the table that contains the **foreign key column**.
+2. Click the **“Relation view”** tab.
+3. Locate the row of the column you want to convert into a Foreign Key.
+
+### Fill in the relationship fields:
+
+#### 🔹 **Constraint Name**
+
+Use a readable format, for example:
+
+```
+fk_nameofkey_nameofwheretable
+```
+
+Example:
+
+```
+fk_posID_positions
+```
+
+#### 🔹 **Column**
+
+The column in the current table that references another table (e.g. `posID`).
+
+#### 🔹 **Foreign Key Constraint**
+
+Fill in the following:
+
+- **Database:** _(Your database name)_
+- **Table:** The table where the referenced column exists
+
+  - Example: `positions`
+
+- **Column:** The referenced column in that table
+
+  - Example: `posID`
+
+Finally → **Click Save**.
+
+---
+
 2. **Organize folders**:
 
 ```bash
-mkdir backend frontend
+mkdir backend frontend    # Making folder for backend and frontend
 ```
 
 > Or name them `server` and `client` as preferred.
@@ -131,9 +223,9 @@ mkdir backend frontend
 3. **Initialize backend**:
 
 ```bash
-cd backend
-npm init -y
-npm install express mysql body-parser cors nodemon
+cd backend                                              # Move into the backend folder
+npm init -y                                             # Create a package.json with default settings
+npm install express mysql body-parser cors nodemon      # Install dependencies
 ```
 
 4. **Backend Dependencies Breakdown**:
@@ -158,8 +250,8 @@ npm install express mysql body-parser cors nodemon
 
 6. **Create `server.js`** in the backend folder.
 
-   * Add your Express server code.
-   * Test backend:
+   - Add your Express server code.
+   - Test backend:
 
 ```bash
 npm run dev
@@ -228,6 +320,7 @@ npm start
 ---
 
 # Phase 2️⃣
+
 > Developing application
 
 1. Go to `App.js` located in frontend/src/App.js and modify the and change the code. (Rest of the comments and instructions are in the code itself)
@@ -250,6 +343,7 @@ touch touch PositionsManagement.js VoterManagement.js CandidateManagement.js Vot
 
 > This is the most complex module due to the constraints.
 > **Key Steps & Logic:**
+
 - **Voter Login:** Collect `voterIDNum` and `voterPass`.
   - **Backend Check:** Verify credentials, check `voterStat = 'Active'`, and check `voted = 'N'`.
 - **Display Positions/Candidates:** On successful login, fetch all **'Active'** candidates grouped by **'Open'** positions.
@@ -259,19 +353,18 @@ touch touch PositionsManagement.js VoterManagement.js CandidateManagement.js Vot
   - **Backend Action:** Insert all votes into the `votes` table.
   - **Backend Action:** **Crucially**, update the logged-in voter's `voted` field to `'Y'`.
 
-
-
 5. Go to `ResultsUI.js` file under `components` folder and encode the necessary code to function the logic of Positions. (Rest of the comments and instructions are in the code itself)
 
 6. Go to `WinnersUI.js` file under `components` folder and encode the necessary code to function the logic of Positions. (Rest of the comments and instructions are in the code itself)
 
 7. Go to `Home.js` (Landing Page) file under `components` folder and encode the necessary code to function the logic of Positions. (Rest of the comments and instructions are in the code itself)
 
->This component simply acts as the landing page, providing context for the application.
+> This component simply acts as the landing page, providing context for the application.
 
 8. Go to `VoterManagement.js` (Landing Page) file under `components` folder and encode the necessary code to function the logic of Positions. (Rest of the comments and instructions are in the code itself)
 
 > This code includes:
+
 - Form for Adding a voter.
 - Table to Read all voters.
 - Modal or Form for Updating details.

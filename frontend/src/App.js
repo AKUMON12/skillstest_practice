@@ -3,8 +3,8 @@
 // ----------------------------------------------------------------------
 // CORE IMPORTS & DEPENDENCIES
 // ----------------------------------------------------------------------
-import React from 'react'; // Core React library (ALWAYS INCLUDE THIS)
-import 'bootstrap/dist/css/bootstrap.min.css'; // Imports the CSS framework for styling
+import React from 'react';                                // Core React library (ALWAYS INCLUDE THIS)
+import 'bootstrap/dist/css/bootstrap.min.css';            // Imports the CSS framework for styling
 import { Container, Nav, Navbar } from 'react-bootstrap'; // Imports specific React-Bootstrap components
 
 // ----------------------------------------------------------------------
@@ -12,13 +12,27 @@ import { Container, Nav, Navbar } from 'react-bootstrap'; // Imports specific Re
 // ----------------------------------------------------------------------
 // These imports link the main App.js file to the individual component files 
 // located in the './components/' directory.
-import PositionsManagement from './components/PositionsManagement'; // Module 1: CRUD for election positions (President, Senator, etc.)
-import VoterManagement from './components/VoterManagement'; // Module 2: CRUD for voter records.
-import CandidateManagement from './components/CandidateManagement'; // Module 3: CRUD for candidates and assigning them to positions.
-import VotingUI from './components/VotingUI'; // Module 4: The interface where voters log in and cast their ballots.
-import ResultsUI from './components/ResultsUI'; // Module 5: Displays raw vote counts and percentages.
-import WinnersUI from './components/WinnersUI'; // Module 6: Calculates and displays the final winners based on numOfPositions.
-import Home from './components/Home'; // The default landing component.
+
+// Module 1: CRUD for election positions    (President, Senator, etc.)
+import PositionsManagement from './components/PositionsManagement';
+
+// Module 2: CRUD for voter records.
+import VoterManagement from './components/VoterManagement'; 
+
+// Module 3: CRUD for candidates and assigning them to positions.
+import CandidateManagement from './components/CandidateManagement';
+
+// Module 4: The interface where voters log in and cast their ballots.
+import VotingUI from './components/VotingUI'; 
+
+// Module 5: Displays raw vote counts and percentages.
+import ResultsUI from './components/ResultsUI'; 
+
+// Module 6: Calculates and displays the final winners based on numOfPositions.
+import WinnersUI from './components/WinnersUI'; 
+
+// The default landing component.
+import Home from './components/Home'; 
 
 // ----------------------------------------------------------------------
 // MAIN APPLICATION COMPONENT (App.js)
