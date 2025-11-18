@@ -373,3 +373,111 @@ touch touch PositionsManagement.js VoterManagement.js CandidateManagement.js Vot
 9. Go to `CandidateManagement.js` (Landing Page) file under `components` folder and encode the necessary code to function the logic of Positions. (Rest of the comments and instructions are in the code itself)
 
 > This component requires CRUD (Create, Read, Update, Deactivate) operations against the /api/candidates endpoint, and requires fetching the list of Positions to assign a candidate to a role.
+
+---
+
+# Important: How to Show Databases in XAMPP
+
+To show databases in XAMPP:
+
+1. Open **XAMPP Control Panel**
+2. Click **Shell**
+3. Type the following command:
+
+````bash
+mysql -u root
+
+Then inside the MySQL prompt, type:
+
+```sql
+SHOW DATABASES;
+````
+
+## Below is a clean **table-formatted cheat sheet** of the most commonly used **MySQL/MariaDB database commands** — from scanning databases → selecting one → listing tables → viewing table structure → showing table data.
+
+---
+
+# ✅ **MySQL Command**
+
+### **1. Database-Level Commands**
+
+| Purpose                          | Command                          |
+| -------------------------------- | -------------------------------- |
+| Show all databases               | `SHOW DATABASES;`                |
+| Select (enter) a database        | `USE database_name;`             |
+| Show currently selected database | `SELECT DATABASE();`             |
+| Create a new database            | `CREATE DATABASE database_name;` |
+| Delete a database                | `DROP DATABASE database_name;`   |
+
+---
+
+### **2. Table-Level Commands**
+
+| Purpose                              | Command                                         |
+| ------------------------------------ | ----------------------------------------------- |
+| Show all tables in selected database | `SHOW TABLES;`                                  |
+| Create a new table                   | `CREATE TABLE table_name (column definitions);` |
+| Show table structure                 | `DESCRIBE table_name;`                          |
+| or                                   | `SHOW COLUMNS FROM table_name;`                 |
+| Show table creation SQL              | `SHOW CREATE TABLE table_name;`                 |
+| Delete a table                       | `DROP TABLE table_name;`                        |
+| Rename a table                       | `RENAME TABLE old_name TO new_name;`            |
+
+---
+
+### **3. Viewing Data in Tables**
+
+| Purpose                    | Command                                     |
+| -------------------------- | ------------------------------------------- |
+| Show all data from a table | `SELECT * FROM table_name;`                 |
+| Show only certain columns  | `SELECT column1, column2 FROM table_name;`  |
+| Show only first N rows     | `SELECT * FROM table_name LIMIT N;`         |
+| Show filtered data         | `SELECT * FROM table_name WHERE condition;` |
+| Count rows                 | `SELECT COUNT(*) FROM table_name;`          |
+
+---
+
+### **4. Manipulating Data**
+
+| Purpose         | Command                                                    |
+| --------------- | ---------------------------------------------------------- |
+| Insert a row    | `INSERT INTO table_name (col1, col2) VALUES (val1, val2);` |
+| Update data     | `UPDATE table_name SET col1=value WHERE condition;`        |
+| Delete rows     | `DELETE FROM table_name WHERE condition;`                  |
+| Delete all rows | `TRUNCATE TABLE table_name;`                               |
+
+---
+
+# 🎯 **Most common workflow (in order)**
+
+### **Step 1 — Show all databases**
+
+```
+SHOW DATABASES;
+```
+
+### **Step 2 — Select a database**
+
+```
+USE election_system_db;
+```
+
+### **Step 3 — Show the tables in that database**
+
+```
+SHOW TABLES;
+```
+
+### **Step 4 — Show table structure**
+
+```
+DESCRIBE table_name;
+```
+
+### **Step 5 — Show data inside a table**
+
+```
+SELECT * FROM table_name;
+```
+
+---
